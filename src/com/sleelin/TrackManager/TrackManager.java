@@ -8,8 +8,6 @@ import java.util.HashMap;
 import net.codej.permissionsplus.PermissionsPlus;
 
 import org.bukkit.World;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.command.ColouredConsoleSender;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.entity.Player;
