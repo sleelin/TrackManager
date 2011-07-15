@@ -1,4 +1,4 @@
-package com.sleelin.P2Tracks;
+package com.sleelin.TrackManager;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -20,7 +20,7 @@ import org.bukkit.util.config.Configuration;
 
 import com.nijikokun.bukkit.Permissions.Permissions;
 
-public class P2Tracks extends JavaPlugin {
+public class TrackManager extends JavaPlugin {
 	
 	public Permissions permissions = null;
 	public PermissionsPlus p2 = null;
@@ -31,11 +31,14 @@ public class P2Tracks extends JavaPlugin {
 	Configuration config;
 	
 	// Config variables
-	HashMap<String, List<Track>> worlds = new HashMap<String, List<Track>>();
-	HashMap<String, List<String>> defaulttracks = new HashMap<String, List<String>>();
+	public HashMap<String, List<Track>> worlds = new HashMap<String, List<Track>>();
+	public HashMap<String, List<String>> defaulttracks = new HashMap<String, List<String>>();
+	public String minorColor = "&e";
+	public String majorColor = "&b";
+	public String errorColor = "&c";
 	
 	// External interface
-	public static P2Tracks P2Tracks = null;
+	public static TrackManager TrackManager = null;
 	
 	public final class Track {
 		List<String> groups = new ArrayList<String>();
@@ -46,7 +49,7 @@ public class P2Tracks extends JavaPlugin {
 	public void onEnable() {
 		pm = getServer().getPluginManager();
 		console = new ColouredConsoleSender((CraftServer)getServer());
-		config = getConfiguration();
+		config = new Configuration(new File("plugins/PermissionsPlus/config.yml"));
 		
 		permissions = (Permissions)checkPlugin("Permissions");
 		p2 = (PermissionsPlus)checkPlugin("PermissionsPlus");
@@ -61,20 +64,23 @@ public class P2Tracks extends JavaPlugin {
 		loadConfig();
 		
 		// Register events
-		getCommand("track").setExecutor(this);
+		getCommand("track").setExecutor(new CommandHandler(this));
 		
 		// Setup external interface
-		P2Tracks.P2Tracks = this;
+		TrackManager.TrackManager = this;
 		
-		console.sendMessage("["+getDescription().getName() + "] v" + getDescription().getVersion() + " enabled");
+		console.sendMessage(minorColor+"["+majorColor+getDescription().getName()+minorColor+"] v" + getDescription().getVersion() + " enabled");
 	}
 	
 	public void onDisable() {
-		console.sendMessage("["+getDescription().getName() + "] Disabled!");
+		console.sendMessage(minorColor+"["+majorColor+getDescription().getName()+minorColor+"] Disabled!");
 	}
 	
-	private void loadConfig() {
+	public final void loadConfig() {
 		config.load();
+		minorColor = config.getString("MinorColor");
+		majorColor = config.getString("MajorColor");
+		errorColor = config.getString("ErrorColor");
 		for (World world : getServer().getWorlds()){
 			File groups = new File("plugins/Permissions/"+ world.getName() +"/groups.yml");
 			if (groups.exists()){
@@ -123,23 +129,5 @@ public class P2Tracks extends JavaPlugin {
 		} else {
 			return def;
 		}
-	}
-	
-	/*
-	 * Command Handler
-	 */
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-		if (!command.getName().equalsIgnoreCase("ichat")) return false;
-		if (sender instanceof Player && !hasPerm((Player)sender, "p2.tracks.reload", sender.isOp())) {
-			sender.sendMessage("[P2Tracks] Permission Denied");
-			return true;
-		}
-		if (args.length != 1) return false;
-		if (args[0].equalsIgnoreCase("reload")) {
-			loadConfig();
-			sender.sendMessage("[P2Tracks] Config Reloaded");
-			return true;
-		}
-		return false;
 	}
 }
