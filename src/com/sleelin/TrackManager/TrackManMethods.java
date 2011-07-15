@@ -295,5 +295,71 @@ public final class TrackManMethods {
 			return successMessage+"Successfully updated track "+TrackManager.majorColor+name+TrackManager.minorColor+" in world "+TrackManager.majorColor+world;
 		}
 	}
+	
+	public String mdefault(String world, String groupdata){
+		//check all parameters have been passed into the function
+		if ((!TrackManager.worlds.containsKey(world))&&(!world.equals("*"))){
+			return failMessage+"World not found!";
+		}
+		if (groupdata.equalsIgnoreCase("")){
+			return failMessage+"Groups cannot be blank!";
+		}
+		
+		//create new default track
+		List<String> groups = new ArrayList<String>();
+		//split groups into array by comma and add each to new track
+		String[] newgroups = groupdata.split(","); 
+		for (String group : newgroups){
+			groups.add(group);
+		}
+		
+		//check if adding to all worlds or not
+		if (world.equals("*")){
+			//if so, iterate through each one and add the default track
+			
+			for (World tmpworld : TrackManager.getServer().getWorlds()){
+				
+				//load the permissions group file
+				File groupfile = new File("plugins/Permissions/"+tmpworld.getName()+"/groups.yml");
+				if (groupfile.exists()){
+					//if it exists, add the new track
+					Configuration groupconfig = new Configuration(groupfile);
+					groupconfig.load();
+					groupconfig.setProperty("track", groups);
+					groupconfig.save();
+				} else {
+					//otherwise, throw an error
+					return failMessage+"Permissions group file not found for "+tmpworld.getName()+"!"; 
+				}
+				
+				//add the track to the internal record of tracks
+				TrackManager.defaulttracks.remove(tmpworld.getName());
+				TrackManager.defaulttracks.put(tmpworld.getName(), groups);
+				
+			}
+			return successMessage+"Successfully updated default track in all worlds";
+			
+		} else {
+			//otherwise, simply update the default track
+			
+			//first load the file and check it exists
+			File groupfile = new File("plugins/Permissions/"+world+"/groups.yml");
+			if (groupfile.exists()){
+				//if so, add the new track
+				Configuration groupconfig = new Configuration(groupfile);
+				groupconfig.load();
+				groupconfig.setProperty("track", groups);
+				groupconfig.save();
+			} else {
+				//otherwise, throw an error
+				return failMessage+"Permissions group file not found for "+world+"!"; 
+			}
+			
+			//add the track to the internal record of tracks
+			TrackManager.defaulttracks.remove(world);
+			TrackManager.defaulttracks.put(world, groups);
+			return successMessage+"Successfully updated default track in world "+TrackManager.majorColor+world;
+		}
+	}
 
 }

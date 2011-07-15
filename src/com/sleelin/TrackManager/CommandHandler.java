@@ -71,6 +71,16 @@ public class CommandHandler implements CommandExecutor {
 				sender.sendMessage(trackManMethods.failMessage+"You don't have permission to do that!");
 			}
 		}
+		if (args[0].equalsIgnoreCase("default")){
+			if (TrackManager.hasPerm((Player) sender, "trackman.default", sender.isOp())){
+				if (!(args.length==3)){
+					showUsage(sender, "default");
+					return true;
+				} else {
+					sender.sendMessage(trackManMethods.mdefault(args[1], args[2]));
+				}
+			}
+		}
 		return false;
 	}
 
@@ -86,6 +96,8 @@ public class CommandHandler implements CommandExecutor {
 			sender.sendMessage("usage: /track remove [trackname] [world]");
 		} else if (command.equals("modify")){
 			sender.sendMessage("usage: /track modify [trackname] [world] [groups (comma separated)]");
+		} else if (command.equals("default")){
+			sender.sendMessage("usage: /track default [world] [groups (comma separated)]");
 		} else {
 			sender.sendMessage("usage: /track [add|remove|modify]");
 		}
