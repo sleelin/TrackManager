@@ -1,0 +1,12 @@
+name: P2Tracks
+main: com.sleelin.P2Tracks.P2Tracks
+version: 0.1.0
+depend:
+- Permissions
+- PermissionsPlus
+author: Sleelin
+description: Adds track management and promotion to Permissions Plus!
+commands:
+  track:
+    description: base command used for managing and manipulating tracks.
+    usage: /<command> reload - Used to reload the plugin.
